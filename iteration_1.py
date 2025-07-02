@@ -1,3 +1,5 @@
+import random
+
 #class card
 class card:
     #constructor 
@@ -43,14 +45,14 @@ class card:
 
     def getid(self):
             return self.id
-
-
+    
 #class player
 class player:
-    #constructor 
-    def __init__(self, nname, nhealth, nis_turn):
+        #constructor 
+    def __init__(self, nname, nhealth, nenergy, nis_turn):
         self.name = str(nname)
         self.health = int(nhealth)
+        self.energy = int(nenergy)
         self.deck = None
         self.hand = None
         self.discard_pile = None
@@ -70,6 +72,13 @@ class player:
     
     def sethealth(self, ghealth):
         self.health = ghealth
+
+
+    def getenergy(self):
+        return self.energy
+    
+    def setenergy(self, genergy):
+        self.energy = genergy
 
 
     def getdeck(self):
@@ -104,7 +113,41 @@ class player:
     
     def setis_turn(self, gis_turn):
         self.is_turn = gis_turn
-    
+
+
+    #methods
+    def draw_card(self):
+        if self.deck: #if deck is not empty
+            if len(self.hand) < 5: #if hand isn't full
+                self.hand.append(self.deck.pop(0)) #remove top card from deck and append to hand
+            else:
+                print("Hand is full.")
+        else:
+            self.shuffle_deck()
+            self.hand.append(self.deck.pop(0))
+            
+    def discard_card(self):
+        if self.hand: #if hand is not empty
+            for card in selected_cards:
+                if card in self.hand:
+                    self.hand.remove(card) #remove card from hand
+                    self.discard_pile.append(card) #appends to discard_pile
+                else:
+                    print("Card not found in hand.")
+            selected_cards.clear() #clear selected cards for next player
+        else:
+            print("Hand is empty.")
+            
+    def shuffle_deck(self):
+        if self.deck: #checks if there are cards in deck
+            random.shuffle(self.deck)
+        elif self.discard_pile: 
+            self.setdeck(self.discard_pile[:]) #copies discard_pile into deck (else when discard_pile gets deleted, so does deck)
+            self.setdiscard_pile([])
+            random.shuffle(self.deck)
+        else:
+            print("No cards to shuffle.")	
+            
 
 #class game
 class game:
@@ -118,81 +161,192 @@ class game:
 
 #getters and setters
     def getplayers(self):
-            return self.players
+        return self.players
     
     def setplayers(self, gplayers):
-            self.players.append(gplayers)
+        self.players.append(gplayers)
 
 
     def getturn_counter(self):
-            return self.turn_counter
+        return self.turn_counter
     
     def setturn_counter(self, gturn_counter):
-            self.type = gturn_counter
+        self.type = gturn_counter
 
 
     def getcurrent_player_index(self):
-            return self.current_player_index
+        return self.current_player_index
+
+
+    def switch_current_player(self):
+        if self.current_player_index == 1:
+            self.current_player_index = 2
+        else:
+            self.current_player_index = 1
 
 
     def getgame_over(self):
-            return self.game_over
+        return self.game_over
     
     def setgame_over(self):
-            self.game_over = True
+        self.game_over = True
 
 
     def getwinner(self):
-            return self.winner
+        return self.winner
 
     def setwinner(self, gwinner):
-            self.winner = str(gwinner)
+        self.winner = str(gwinner)
 
 
-# initialise cards
-soldier_type_1 = card("Soldier", "Attack", 10, 0, 2, "Soldier ready for duty.\nDamage: 10\nHealing: 0", 1)
-soldier_type_2 = card("Sleepy Soldier", "Attack", 5, 0, 1, "What time is it???\nDamage: 5\nHealing: 0", 2)
-soldier_type_3 = card("Crazed Soldier", "Attack", 30, -20, 3, "If I'm going down, you're coming with me.\nDamage: 30\nHealing: -20", 3)
-
-support_1 = card("Flagbearer", "Support", 0, 30, 4, "Ego? But when have I lost?\n[Adds 30 health for 3 rounds.]\nDamage: 0\nHealing: +30", 4) #add condition to main loop to check if effect is active
-support_2 = card("Medic", "Support", 0, 10, 2, "Soldier ready for duty.\nDamage: 0\nHealing: +10", 5)
-
-#initialise players
-player_1 = player("JohnDoe", 100, False)
-player_2 = player("JaneDoe", 100, False)
-
-#deck/hand/discard input test
-player_1.setdeck([soldier_type_1, soldier_type_2])
-player_1.sethand([soldier_type_3])
-player_1.setdiscard_pile([support_1])
-
-#current game
-new_game = game(1, 1)
-
-player_1.setis_turn(True)
-new_game.setwinner("Player 1")
-new_game.setgame_over()
-
-#displays players info
-print(f"""Players:
-      
-      Player 1:
-      Name: {player_1.getname()}
-      Health: {player_1.gethealth()}
-      Deck: {player_1.getdeck()}
-      Hand: {player_1.gethand()}
-      Discard Pile: {player_1.getdiscard_pile()}
-      Status Effects: {player_1.getstatus_effects()}
-      Is_Turn: {player_1.getis_turn()}
-      
-      Player 2:
-      Name: {player_2.getname()}
-      Health: {player_2.gethealth()}
-      Deck: {player_2.getdeck()}
-      Hand: {player_2.gethand()}
-      Discard Pile: {player_2.getdiscard_pile()}
-      Status Effects: {player_2.getstatus_effects()}
-      Is_Turn: {player_2.getis_turn()}""")
+    #methods
+    def next_turn(self):
+        self.turn_counter += 1
 
 
-#completed iteration 1
+def start_game():
+    new_game = game(1, 1)
+    new_game.setplayers([player_1, player_2])
+    for player in new_game.getplayers():
+        player.shuffle_deck()
+        for i in range(5):
+            player.draw_card()
+    
+    player_1.setis_turn(True)
+    player_2.setis_turn(False)
+
+    return new_game
+
+
+def check_current_player():
+    if new_game.getcurrent_player_index() == 1:
+        current_player = player_1
+        opponent = player_2
+    else:
+        current_player = player_2
+        opponent = player_1
+    return current_player, opponent
+
+
+def switch_turn():
+    current_player, opponent = check_current_player()
+    current_player.draw_card()
+    current_player.setenergy(current_player.getenergy() + 2)
+
+    new_game.switch_current_player()
+    current_player, opponent = check_current_player()
+    current_player.setis_turn(True)
+    opponent.setis_turn(False)
+
+
+#applies selected cards effects
+def apply_card_effect():
+    current_player, opponent = check_current_player()
+
+    total_damage = 0
+    total_heal = 0
+    total_energy_cost = 0
+
+    for card in selected_cards:
+        total_energy_cost += card.getcost()
+
+    if current_player.getenergy() < total_energy_cost:
+        print("Not enough energy to play all selected cards.")
+        return None  # Don't apply effects
+
+    for card in selected_cards:
+        damage = card.getdmg()
+        heal = card.getheal()
+        cost = card.getcost()
+
+        current_player.setenergy(current_player.getenergy() - cost)
+        opponent.sethealth(opponent.gethealth() - damage)
+        current_player.sethealth(current_player.gethealth() + heal)
+
+        total_damage += damage
+        total_heal += heal
+
+    return total_damage, total_heal, total_energy_cost
+
+
+#on click select and if clicked again deselect
+def select_card(clicked_card): #clicked_card is selected from card in hand by click
+    if clicked_card in selected_cards:
+        selected_cards.remove(clicked_card)
+    else:
+        selected_cards.append(clicked_card)
+    return selected_cards
+
+def take_turn():
+    current_player, _ = check_current_player()
+
+    #if card is clicked then do this
+    select_card(clicked_card)
+
+    #if end turn is clicked
+    result = apply_card_effect()
+    if result is None:
+        print("Turn not ended. Not enough energy.")
+        return  #player must modify selection and try again
+
+    total_damage, total_heal, total_energy_cost = result #take total_damage, total_heal, total_energy_cost as parameters to change ui
+    print(f"Used {total_energy_cost} energy, dealt {total_damage} damage, healed {total_heal} HP.")
+    
+    current_player.draw_card()
+    new_game.next_turn()  
+    switch_turn()
+
+
+#checks if a player hits 0 health, then sets the other player as the winner and sets game as over
+def check_game_over():
+    current_player, opponent = check_current_player()
+    if current_player.gethealth() == 0 and opponent.gethealth() == 0: #if both players die
+        new_game.setwinner("Draw.")
+        new_game.setgame_over()
+        return True
+    elif new_game.getturn_counter() == 11: #if turn counter = max rounds + 1 (if no one dies)
+        if current_player.gethealth() > opponent.gethealth(): #if player has more health than opponent
+            new_game.setwinner(current_player.getname())
+            new_game.setgame_over()
+            return True
+        elif current_player.gethealth() < opponent.gethealth():  #if opponent has more health than player
+            new_game.setwinner(opponent.getname())
+            new_game.setgame_over()
+            return True
+        else: #if they have the same health at the end of the game
+            new_game.setwinner("Draw.")
+            new_game.setgame_over()
+            return True
+    elif opponent.gethealth() == 0: #if opponent dies
+        new_game.setwinner(current_player.getname())
+        new_game.setgame_over()
+        return True
+    elif current_player.gethealth() == 0: #if current player kills themself
+        new_game.setwinner(opponent.getname())
+        new_game.setgame_over()
+        return True
+    else:
+         return False
+
+
+run = True
+while run:
+    
+	#key variables
+    player_1 = player("JohnDoe", 100, 10, False)
+    player_2 = player("JaneDoe", 100, 10, False)
+    clicked_card = 0 #placeholder and card selected will be from click which i cant do right now
+    selected_cards = []
+     
+    choice = str(input("Play a game? (y/n): ")).lower()
+    if choice == 'y':
+        new_game= start_game()
+        while not check_game_over():
+            take_turn()
+        print(f"Winner: {new_game.getwinner()}")
+
+        continue_choice = str(input("Play again? (y/n): ")).lower()
+        if continue_choice != 'y':
+            run = False
+    else:
+        run = False

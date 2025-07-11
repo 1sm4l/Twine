@@ -1,5 +1,9 @@
 # Twine
-A solo developed, turn-based, card game based on Magic: The Gathering and UI inspired from Balatro.
+A solo developed, turn-based, card game based on Magic: The Gathering and UI inspired from Balatro. Built using Python with pygame and pygame_gui.
+
+Pre-requesites:
+pip install pygame
+pip install pygame_gui
 
 Iteration 1:
 Created classes for main game loop.
@@ -14,5 +18,7 @@ Iteration 4:
 Implemented input handling for all buttons.
 
 Iteration 5:
+
 Iteration 6:
+
 Iteration 7:

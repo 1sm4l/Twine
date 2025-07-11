@@ -3,6 +3,7 @@ A solo developed, turn-based, card game based on Magic: The Gathering and UI ins
 
 # Pre-requesites:
 pip install pygame
+
 pip install pygame_gui
 
 # Iteration Log
